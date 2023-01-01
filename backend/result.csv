@@ -6,3 +6,4 @@ s.no,amount,item_type,tax
 5,23456,3,invalid_item_type
 6,23456,3,invalid_item_type
 7,25000,2,3000
+8,3000,0,150
