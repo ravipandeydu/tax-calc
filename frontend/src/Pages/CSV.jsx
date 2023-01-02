@@ -2,7 +2,9 @@ import {
   Box,
   Button,
   Divider,
+  Flex,
   Heading,
+  Image,
   Input,
   Table,
   TableCaption,
@@ -15,49 +17,23 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getInput, getResult } from "../Redux/tax/tax.actions";
 
 const CSV = () => {
   const toast = useToast();
   const [csv, setCsv] = useState({});
-  const [invoices, setInvoices] = useState([]);
-  const [result, setResult] = useState([]);
+  const invoices = useSelector((state) => state.tax.input);
+  const result = useSelector((state) => state.tax.result);
+  const loading = useSelector((state) => state.tax.loading);
+  const error = useSelector((state) => state.tax.error);
+  const dispatch = useDispatch();
 
   function handleSubmit() {
-    try {
-      let formData = new FormData();
-      console.log(csv);
-      formData.append("invoices", csv);
-      console.log(formData);
-      fetch("https://tax-calc.onrender.com/upload", {
-        method: "post",
-        body: formData,
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setResult([]);
-          setInvoices(data.input);
-          console.log(data);
-        });
-    } catch (e) {
-      console.log(e);
-    }
+    dispatch(getInput(csv));
   }
   function handleResult() {
-    try {
-      let formData = new FormData();
-      console.log(csv);
-      formData.append("invoices", csv);
-      console.log(formData);
-      fetch("https://tax-calc.onrender.com/upload", {
-        method: "post",
-        body: formData,
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setInvoices([]);
-          setResult(data.result);
-        });
-    } catch (e) {}
+    dispatch(getResult(csv));
   }
   return (
     <Box align={"center"}>
@@ -74,7 +50,6 @@ const CSV = () => {
         <Button onClick={handleResult} disabled={invoices?.length < 1}>
           Get Result
         </Button>
-
         {invoices?.length > 0 ? (
           <Box maxW={"2xl"}>
             <Heading my={5}>Invoices</Heading>
@@ -147,6 +122,48 @@ const CSV = () => {
             <Button type="submit">Download Result</Button>
           </form>
         </Box>
+      ) : (
+        ""
+      )}
+      {loading ? (
+        <Flex
+          w="100vw"
+          h={"100vh"}
+          mx={"auto"}
+          align={"center"}
+          justify={"center"}
+          bg={"rgba(245,250,254,.5)"}
+          backgroundBlendMode={"hard-light"}
+          position={"absolute"}
+          top={"0"}
+          left={"0"}
+        >
+          <Image
+            borderRadius={"50%"}
+            src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Loading_2.gif?20170503175831"
+          />
+        </Flex>
+      ) : (
+        ""
+      )}
+      {error ? (
+        <Flex
+          w="100vw"
+          h={"100vh"}
+          mx={"auto"}
+          align={"center"}
+          justify={"center"}
+          bg={"rgba(245,250,254,.5)"}
+          backgroundBlendMode={"hard-light"}
+          position={"absolute"}
+          top={"0"}
+          left={"0"}
+        >
+          <Image
+            borderRadius={"50%"}
+            src="https://i.ytimg.com/vi/dk2z7dCCpzQ/maxresdefault.jpg"
+          />
+        </Flex>
       ) : (
         ""
       )}
